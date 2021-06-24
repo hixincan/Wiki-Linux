@@ -261,7 +261,7 @@ groups <user> #查看user所在组
 
 `df -h` 按M（兆）单位查看
 
-![image-20210526223230814](Linux.assets/image-20210526223230814.png)
+![image-20210526223230814](Linux.assets/image-20210526223230814.png)	
 
 
 
@@ -271,7 +271,7 @@ groups <user> #查看user所在组
 
 挂载：mount
 
-![image-20210526224518490](Linux.assets/image-20210526224518490.png)
+![image-20210526224518490](Linux.assets/image-20210526224518490.png)	
 
 卸载：umount -f [挂载位置]
 
@@ -333,7 +333,7 @@ war包，需要放入 tomcat webapps 下执行
 
 服务器上的端口为空
 
-![image-20210527115150275](Linux.assets/image-20210527115150275.png)
+![image-20210527115150275](Linux.assets/image-20210527115150275.png)	
 
 控制台已开放一部分端口，与服务器上的端口需要同时开启
 
@@ -352,6 +352,10 @@ firewall-cmd --zone=public --add-port=3306/tcp --permanent
 firewall-cmd --zone=public --add-port=6379/tcp --permanent
 firewall-cmd --zone=public --add-port=80/tcp --permanent
 firewall-cmd --zone=public --add-port=443/tcp --permanent
+
+firewall-cmd --zone=public --add-port=9001/tcp --permanent
+firewall-cmd --zone=public --add-port=9/tcp --permanent
+
 #重启
 systemctl restart firewalld.service
 ```
@@ -532,85 +536,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 
 
-### Docker安装（yum）
 
-> 基于 CentOS 7 安装
-
-1. 官网安装参考手册：https://docs.docker.com/engine/install/centos/
-
-2. 确定你是CentOS7及以上版本
-
-   ```
-   [root@192 Desktop]# cat /etc/redhat-release
-   CentOS Linux release 7.2.1511 (Core)
-   ```
-
-3. yum安装gcc相关（需要确保 虚拟机可以上外网 ）
-
-   ```
-   yum -y install gcc
-   yum -y install gcc-c++
-   ```
-
-4. 卸载旧版本
-
-   ```
-   yum -y remove docker docker-common docker-selinux docker-engine
-   # 官网版本
-   yum remove docker \
-             docker-client \
-             docker-client-latest \
-             docker-common \
-             docker-latest \
-             docker-latest-logrotate \
-             docker-logrotate \
-             docker-engine
-   ```
-
-5. 安装需要的软件包
-
-   ```
-   yum install -y yum-utils device-mapper-persistent-data lvm2
-   ```
-
-6. 设置stable镜像仓库
-
-   ```
-   # 错误
-   yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-   ## 报错
-   [Errno 14] curl#35 - TCP connection reset by peer
-   [Errno 12] curl#35 - Timeout
-   
-   # 正确推荐使用国内的
-   yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-   ```
-
-7. 更新yum软件包索引
-
-   ```
-   yum makecache fast
-   ```
-
-8. 安装Docker CE
-
-   ```
-   yum -y install docker-ce docker-ce-cli containerd.io
-   ```
-
-9. 启动docker
-
-   ```
-   systemctl start docker
-   ```
-
-10. 测试
-
-    ```
-    docker version
-    docker run hello-world
-    docker images
-    ```
 
 ### mysql 安装(yum)
 
@@ -762,51 +688,6 @@ TODO 不能用 root 身份登录
 
 
 
-### nginx 安装（rpm）
-
-官方下载：http://nginx.org/packages/
-
-1. 安装源
-
-```bash
-wget http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
-yum localinstall nginx-release-centos-7-0.el7.ngx.noarch.rpm
-```
-
-2. 安装
-
-```bash
-yum install nginx
-nginx -v # 1.20.1
-```
-
-3. 启动
-
-```bash
-systemctl start nginx
-curl localhost #用 curl 命令访问一次查看是否启动成功
-```
-
-4. 设置开机自启
-
-```bash
-systemctl enable nginx
-# 重载所有修改过的配置文件
-systemctl daemon-reload
-```
-
-5. 安装位置
-
-    nginx的配置文件在/etc/nginx/nginx.conf
-
-    自定义的配置文件放在/etc/nginx/conf.d
-
-    项目文件存放在/usr/share/nginx/html/
-
-    日志文件存放在/var/log/nginx/
-
-    还有一些其他的安装文件都在/etc/nginx
-
 
 
 ### Redis安装（tar.gz）
@@ -886,194 +767,6 @@ redis-cli -p 6379
 ![image-20210527155212630](Linux.assets/image-20210527155212630.png)
 
 
-
-### RabbitMQ安装
-
-```
-sudo yum -y install epel-release
-sudo yum -y update
-```
-#### Install Erlang
-
-Download repository
-
-```
-wget http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
-```
-
-Add repository
-
-```
-sudo rpm -Uvh erlang-solutions-1.0-1.noarch.rpm
-```
-
-Install erlang and dependencies
-```
-sudo yum -y install erlang socat logrotate
-```
-
-#### Install RabbitMQ
-
-Download RabbitMQ package
-
-```
-wget https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.8.8/rabbitmq-server-3.8.8-1.el6.noarch.rpm
-```
-
-Add signing key
-
-```
-sudo rpm --import https://www.rabbitmq.com/rabbitmq-signing-key-public.asc
-```
-
-Install rabbitmq-server
-
-```
-sudo rpm -Uvh rabbitmq-server-3.8.8-1.el6.noarch.rpm
-```
-
-Start RabbitMQ
-
-```
-sudo systemctl start rabbitmq-server
-```
-
-Automatically start RabbitMQ at boot time
-
-```
-sudo systemctl enable rabbitmq-server
-```
-
-#### RabbitMQ Config (Optional)
-
-Create rabbitmq conf file at `/etc/rabbitmq/rabbitmq.conf` 
-
-```
-listeners.ssl.default = 5671
-
-ssl_options.cacertfile = /path/to/cacertfile.pem
-ssl_options.certfile   = /path/to/certfile.pem
-ssl_options.keyfile    = /path/to/keyfile.pem
-ssl_options.verify     = verify_peer
-ssl_options.versions.1 = tlsv1.2
-ssl_options.versions.2 = tlsv1.1
-ssl_options.fail_if_no_peer_cert = false
-
-tcp_listen_options.backlog       = 128
-tcp_listen_options.nodelay       = true
-tcp_listen_options.exit_on_close = false
-tcp_listen_options.keepalive     = false
-
-heartbeat = 580
-```
-
-#### Firewall
-
-If you have a firewall installed and running
-
-```
-sudo firewall-cmd --zone=public --permanent --add-port=4369/tcp
-sudo firewall-cmd --zone=public --permanent --add-port=25672/tcp
-sudo firewall-cmd --zone=public --permanent --add-port=5671-5672/tcp
-sudo firewall-cmd --zone=public --permanent --add-port=15672/tcp
-sudo firewall-cmd --zone=public --permanent --add-port=61613-61614/tcp
-sudo firewall-cmd --zone=public --permanent --add-port=1883/tcp
-sudo firewall-cmd --zone=public --permanent --add-port=8883/tcp
-```
-
-Reload the firewall
-
-```
-sudo firewall-cmd --reload
-```
-
-#### SELinux
-
-If you have SELinux enabled
-
-```
-sudo setsebool -P nis_enabled 1
-```
-
-#### RabbitMQ Web Management Console
-
-Enable RabbitMQ web management console
-
-```
-sudo rabbitmq-plugins enable rabbitmq_management
-```
-
-Modify file permissions
-
-```
-sudo chown -R rabbitmq:rabbitmq /var/lib/rabbitmq/
-```
-
-Create an admin user (Change `password` to a strong password)
-
-```
-sudo rabbitmqctl add_user admin password
-```
-
-Make admin user and administrator
-
-```
-sudo rabbitmqctl set_user_tags admin administrator
-```
-
-Set admin user permissions
-
-```
-sudo rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
-```
-
-To access the RabbitMQ admin
-
-```
-http://Your_Server_IP:15672
-```
-
-#### RabbitMQ Web Management SSL (Recommended)
-
-Create or update rabbitmq conf file at `/etc/rabbitmq/rabbitmq.conf`
-
-```
-management.listener.port = 15672
-management.listener.ssl  = true
-
-management.listener.ssl_opts.cacertfile = /path/to/cacertfile.pem
-management.listener.ssl_opts.certfile   = /path/to/certfile.pem
-management.listener.ssl_opts.keyfile    = /path/to/keyfile.pem
-```
-
-#### RabbitMQ Cluster
-
-Setup multiple RabbitMQ servers, copy script below to `/usr/local/sbin/rabbitmq-cluster.sh` and run the script
-
-
-
-#### yum 卸载 Erlang
-
-yum install erlang
-
-erl -version 
-
-```shell
-[root@centos7 tmp]# erl -version
-Erlang (ASYNC_THREADS,HIPE) (BEAM) emulator version 5.10.4
-```
-
-> 卸载 erlang
-
-yum 安装 erlang 的默认版本与最新的 RabbitMQ 不匹配
-
-yum remove erlang 是不对的。
-
-erlang 有很多依赖包，也要被卸载
-
-yum list installed | grep erlang
-
-yum remove erlang-*
 
 
 
