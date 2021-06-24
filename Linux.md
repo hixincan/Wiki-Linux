@@ -379,6 +379,11 @@ firewall-cmd --zone=public --add-port=9300/tcp --permanent
 firewall-cmd --zone=public --add-port=8088/tcp --permanent
 firewall-cmd --zone=public --add-port=8089/tcp --permanent
 
+# 
+firewall-cmd --zone=public --add-port=3310/tcp --permanent  
+firewall-cmd --zone=public --add-port=3311/tcp --permanent
+
+
 #重启
 systemctl restart firewalld.service
 ```
@@ -561,153 +566,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 
 
-### mysql 安装(yum)
 
-1. 下载MySQL5.7 rpm：https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
-2. 安装 mysql 源
-
-```bash
-yum localinstall mysql57-community-release-el7-11.noarch.rpm #安装源
-```
-
-![image-20210530182459601](Linux.assets/image-20210530182459601.png)
-
-3. 安装mysql
-
-```bash
- yum install -y mysql-community-server
-```
-
-4. 启动服务
-
-```bash
-systemctl start mysqld
-```
-
-5. 查看服务状态
-
-```bash
- systemctl status mysqld
-```
-
-![image-20210530183315955](Linux.assets/image-20210530183315955.png)
-
-6. 开机启动
-
-```bash
-systemctl enable mysqld # 修改配置
-systemctl daemon-reload # 激活配置
-```
-
-7. 修改root本地账号密码
-
-mysql 安装完成之后，生成的默认密码在 `/var/log/mysqld.log` 文件中。使用 grep 命令找到日志中的密码。
-
-```bash
-grep 'temporary password' /var/log/mysqld.log #查看临时密码 kyySfPp6XH+U
-```
-
-![image-20210530190905645](Linux.assets/image-20210530190905645.png)
-
-
-
-首次通过初始密码登录后，使用以下命令修改密码
-
-```bash
-mysql -uroot -p
-mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY ']~P(Xmt;[LO3';  #重置 root 密码，不然会影响后面创建用户，如下图
-```
-
-![image-20210530192328167](Linux.assets/image-20210530192328167.png)
-
-或者
-
-```bash
-mysql> set password for 'root'@'localhost'=password('MyNewPass4!'); 
-```
-
-以后通过 update set 语句修改密码
-
-```bash
-mysql> use mysql;
-mysql> update user set password=PASSWORD('MyNewPass5!') where user='root';
-mysql> flush privileges;
-```
-
-> 注意：mysql 5.7 默认安装了密码安全检查插件（validate_password），默认密码检查策略要求密码必须包含：大小写字母、数字和特殊符号，并且长度不能少于8位。否则会提示 ERROR 1819 (HY000): Your password does not satisfy the current policy requirements 错误。查看 [MySQL官网密码详细策略](https://links.jianshu.com/go?to=https%3A%2F%2Fdev.mysql.com%2Fdoc%2Frefman%2F5.7%2Fen%2Fvalidate-password-options-variables.html%23sysvar_validate_password_policy)
-
-8. 添加远程登录用户
-
-默认只允许root帐户在本地登录，如果要在其它机器上连接mysql，必须**添加一个允许远程连接的帐户**。或者~~修改 root 为允许远程连接~~（不推荐）
-
-添加一个允许远程连接的帐户
-
-```bash
-GRANT ALL PRIVILEGES ON *.* TO 'xincan'@'%' IDENTIFIED BY 'Xincan2021!' WITH GRANT OPTION;
-ALTER USER 'xincan'@'%' IDENTIFIED BY ']~P(Xmt;[LO3';
-```
-
-~~修改 root 为允许远程连接~~（不推荐）
-
-```php
-mysql> use mysql;
-mysql> UPDATE user SET Host='%' WHERE User='root';
-mysql> flush privileges;
-```
-
-9. 设置默认编码为 utf-8
-
-mysql 安装后默认不支持中文，需要修改编码。
- 修改 `/etc/my.cnf` 配置文件，在相关节点（没有则自行添加）下添加编码配置，如下：
-
-```csharp
-[mysqld]
-character-set-server=utf8
-[client]
-default-character-set=utf8
-[mysql]
-default-character-set=utf8
-```
-
-![image-20210530193739909](Linux.assets/image-20210530193739909.png)
-
-重启mysql服务，查询编码。可以看到已经改过来了
-
-```bash
-shell> systemctl restart mysqld
-shell> mysql -uroot -p # mysql -uxincan -p，回车后输入密码
-mysql> show variables like 'character%';
-```
-
-修改前：
-
-![image-20210530194015856](Linux.assets/image-20210530194015856.png)
-
-修改后：
-
-![image-20210530193958951](Linux.assets/image-20210530193958951.png)
-
-
-
-10. 默认配置文件
-
-配置文件：/etc/my.cnf （mysql核心配置文件）
-
-日志文件：/var/log/mysqld.log
-
-服务启动脚本：/usr/lib/systemd/system/mysqld.service
-
-socket文件：/var/run/mysqld/mysqld.pid
-
-应用目录：/var/lib/mysql
-
-数据文件：/var/lib/mysql/mysql
-
-
-
-11. 客户端连接
-
-TODO 不能用 root 身份登录
 
 
 
