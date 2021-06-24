@@ -131,6 +131,15 @@ make install 安装
 
 
 
+> cp
+
+```
+cp -r /home/packageA/* /home/cp/packageB/
+cp -r /home/packageA /home/packageB
+```
+
+
+
 ### Vim 编辑器
 
 > 批量替换
@@ -288,6 +297,14 @@ groups <user> #查看user所在组
 
 **ps 查看进程**
 
+```shell
+ps -aux|gr
+```
+
+
+
+
+
 ps 参数（参数可叠加）：
 
 * -a 显示当前进程，仅一个
@@ -355,6 +372,12 @@ firewall-cmd --zone=public --add-port=443/tcp --permanent
 
 firewall-cmd --zone=public --add-port=9001/tcp --permanent
 firewall-cmd --zone=public --add-port=9/tcp --permanent
+
+firewall-cmd --zone=public --add-port=9200/tcp --permanent
+firewall-cmd --zone=public --add-port=9300/tcp --permanent
+
+firewall-cmd --zone=public --add-port=8088/tcp --permanent
+firewall-cmd --zone=public --add-port=8089/tcp --permanent
 
 #重启
 systemctl restart firewalld.service
